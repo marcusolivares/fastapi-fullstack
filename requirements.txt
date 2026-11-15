@@ -1,6 +1,8 @@
 fastapi
 uvicorn[standard]
 sqlalchemy
+# database migrations (alembic/ folder, alembic.ini)
+alembic
 # PostgreSQL driver; SQLAlchemy 2.1+ uses psycopg 3 by default for postgresql:// URLs
 psycopg[binary]
 passlib[bcrypt]
