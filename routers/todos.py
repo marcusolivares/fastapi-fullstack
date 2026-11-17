@@ -1,12 +1,10 @@
 import pathlib
-from typing import Annotated
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
+from fastapi import APIRouter, HTTPException, Path, Request, status
 from ..models import Todos
-from ..database import SessionLocal
+from ..dependencies import DbSession
 from starlette import status
-from .auth import get_current_user
+from .auth import CurrentUser, get_current_user
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -16,19 +14,6 @@ router = APIRouter(
      prefix='/todos',
      tags=['todos']
 )
-
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-    
-
-db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 class TodoRequest(BaseModel):
@@ -47,7 +32,7 @@ def redirect_to_login():
 ### Pages ###
 
 @router.get("/todo-page")
-async def render_todo_page(request: Request, db: db_dependency):
+async def render_todo_page(request: Request, db: DbSession):
      try:
           user = await get_current_user(request.cookies.get('access_token'))
 
@@ -77,7 +62,7 @@ async def render_add_todo_page(request: Request):
 
 
 @router.get("/edit-todo-page/{todo_id}")
-async def render_edit_todo_page(request: Request, todo_id: int, db: db_dependency):
+async def render_edit_todo_page(request: Request, todo_id: int, db: DbSession):
      try:
           user = await get_current_user(request.cookies.get('access_token'))
 
@@ -93,14 +78,14 @@ async def render_edit_todo_page(request: Request, todo_id: int, db: db_dependenc
 
 ### Endpoints ###
 @router.get("/", status_code=status.HTTP_200_OK)
-async def read_all(user: user_dependency, db: db_dependency):
+async def read_all(user: CurrentUser, db: DbSession):
     if user is None:
             raise HTTPException(status_code=401, detail='Authentication Failed')
     return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 
 @router.get("/todo/{todo_id}", status_code=status.HTTP_200_OK)
-async def read_todo(user: user_dependency, db: db_dependency, todo_id: int = Path(gt=0)):
+async def read_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
     if user is None:
             raise HTTPException(status_code=401, detail='Authentication Failed')
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()
@@ -110,7 +95,7 @@ async def read_todo(user: user_dependency, db: db_dependency, todo_id: int = Pat
 
 
 @router.post("/todo", status_code=status.HTTP_201_CREATED)
-async def create_todo(user: user_dependency, db: db_dependency, todo_request: TodoRequest):
+async def create_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
     
@@ -121,7 +106,7 @@ async def create_todo(user: user_dependency, db: db_dependency, todo_request: To
 
 
 @router.put("/todo/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_todo(user: user_dependency, db: db_dependency, todo_request: TodoRequest, todo_id: int = Path(gt=0)):
+async def update_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest, todo_id: int = Path(gt=0)):
     if user is None:
             raise HTTPException(status_code=401, detail='Authentication Failed')
     
@@ -140,7 +125,7 @@ async def update_todo(user: user_dependency, db: db_dependency, todo_request: To
 
 
 @router.delete("/todo/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(user: user_dependency, db: db_dependency, todo_id: int = Path(gt=0)):
+async def delete_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
     if user is None:
                 raise HTTPException(status_code=401, detail='Authentication Failed')
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()

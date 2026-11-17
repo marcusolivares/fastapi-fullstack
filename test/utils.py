@@ -16,16 +16,6 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 Base.metadata.create_all(bind=engine)
 
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def override_get_current_user():
-    return {'username': 'codingwithrobytest', 'id': 1, 'user_role': 'admin'}
-
 client = TestClient(app)
 
 @pytest.fixture

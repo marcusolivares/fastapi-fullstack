@@ -1,11 +1,10 @@
 from pathlib import Path
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
-from sqlalchemy.orm import Session
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from starlette import status
-from ..database import SessionLocal
+from ..dependencies import DbSession
 from ..models import Users
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends
@@ -39,16 +38,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-    
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates")
 
@@ -93,8 +82,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user.')
 
 
+CurrentUser = Annotated[dict, Depends(get_current_user)]
+
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: db_dependency, 
+async def create_user(db: DbSession, 
                       create_user_request: CreateUserRequest):
     create_user_model = Users(
         email=create_user_request.email,
@@ -112,7 +104,7 @@ async def create_user(db: db_dependency,
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: DbSession):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user.')

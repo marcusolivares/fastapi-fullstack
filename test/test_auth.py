@@ -1,12 +1,10 @@
-from ..routers.auth import get_db, authenticate_user, create_access_token, SECRET_KEY, ALGORITHM, get_current_user
+from ..routers.auth import authenticate_user, create_access_token, SECRET_KEY, ALGORITHM, get_current_user
 from fastapi import status
 from .utils import *
 from jose import jwt
 from datetime import timedelta
 import pytest
 from fastapi import HTTPException
-
-app.dependency_overrides[get_db] = override_get_db
 
 def test_authenticate_user(test_user):
     with TestingSessionLocal() as db:
