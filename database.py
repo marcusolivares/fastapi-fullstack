@@ -1,17 +1,10 @@
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-# Load TodoApp/.env regardless of the current working directory
-load_dotenv(Path(__file__).resolve().parent / ".env")
+from .config import settings
 
-SQLALCHEMY_DATABASE_URL = os.environ["DATABASE_URL"]
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.database_url)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

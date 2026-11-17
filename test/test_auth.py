@@ -1,5 +1,6 @@
 from ..routers.auth import authenticate_user
-from ..security import create_access_token, SECRET_KEY, ALGORITHM
+from ..config import settings
+from ..security import create_access_token
 from ..dependencies import get_current_user
 from fastapi import status
 from .utils import *
@@ -29,7 +30,7 @@ def test_create_access_token():
 
     token = create_access_token(username, user_id, role, expires_delta)
 
-    decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={'verify_signature': False})
+    decoded_token = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm], options={'verify_signature': False})
 
     assert decoded_token['sub'] == username
     assert decoded_token['id'] == user_id
@@ -39,7 +40,7 @@ def test_create_access_token():
 @pytest.mark.asyncio
 async def test_get_current_user_valid_token():
     encode = {'sub': 'testuser', 'id': 1, 'role': 'admin'}
-    token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(encode, settings.secret_key, algorithm=settings.algorithm)
 
     user = await get_current_user(token=token)
     assert user == {'username': 'testuser', 'id': 1, 'user_role': 'admin'}
@@ -48,7 +49,7 @@ async def test_get_current_user_valid_token():
 @pytest.mark.asyncio
 async def test_get_current_user_missing_payload():
     encode = {'role': 'user'}
-    token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(encode, settings.secret_key, algorithm=settings.algorithm)
 
     with pytest.raises(HTTPException) as excinfo:
         await get_current_user(token=token)

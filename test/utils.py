@@ -1,16 +1,16 @@
-import os
 from sqlalchemy import create_engine, text
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
+from ..config import settings
 from ..database import Base
 from ..main import app
 import pytest
 from ..models import Todos, Users
 from ..security import bcrypt_context
 
-SQLALCHEMY_DATABASE_URL = os.environ["TEST_DATABASE_URL"]
+assert settings.test_database_url, "TEST_DATABASE_URL must be set in TodoApp/.env to run the tests"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.test_database_url)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

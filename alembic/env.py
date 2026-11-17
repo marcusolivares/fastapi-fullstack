@@ -6,15 +6,15 @@ from sqlalchemy import pool
 from alembic import context
 
 from TodoApp import models
-from TodoApp.database import SQLALCHEMY_DATABASE_URL
+from TodoApp.config import settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Read the database URL from .env (via database.py) instead of alembic.ini.
+# Read the database URL from .env (via config.py) instead of alembic.ini.
 # "%" is escaped because the config values go through configparser interpolation.
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL.replace("%", "%%"))
+config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

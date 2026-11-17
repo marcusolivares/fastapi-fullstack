@@ -9,8 +9,8 @@ passlib[bcrypt]
 # passlib is unmaintained and breaks with bcrypt >= 4.1 (hashing errors on bcrypt 5)
 bcrypt==4.0.1
 python-jose[cryptography]
-# loads DATABASE_URL from .env
-python-dotenv
+# typed settings loaded from .env (config.py); pulls in python-dotenv
+pydantic-settings
 # required by OAuth2PasswordRequestForm (/auth/token)
 python-multipart
 # testing (httpx is required by fastapi.testclient.TestClient)
