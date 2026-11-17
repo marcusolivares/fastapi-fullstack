@@ -8,7 +8,7 @@ import pytest
 from ..models import Todos, Users
 from ..routers.auth import bcrypt_context
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "sqlite://"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, 
