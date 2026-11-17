@@ -36,8 +36,8 @@ def test_create_todo(test_todo):
     response = client.post('/todos/todo/', json=request_data)
     assert response.status_code == 201
 
-    db = TestingSessionLocal()
-    model = db.query(Todos).filter(Todos.id == 2).first()
+    with TestingSessionLocal() as db:
+        model = db.query(Todos).filter(Todos.id == 2).first()
     assert model.title == request_data.get('title')
     assert model.description == request_data.get('description')
     assert model.priority == request_data.get('priority')
@@ -54,8 +54,8 @@ def test_update_todo(test_todo):
 
     response = client.put('/todos/todo/1', json=request_data)
     assert response.status_code == 204
-    db = TestingSessionLocal()
-    model = db.query(Todos).filter(Todos.id == 1).first()
+    with TestingSessionLocal() as db:
+        model = db.query(Todos).filter(Todos.id == 1).first()
     assert model.title == 'Change the title!'
 
 
@@ -75,8 +75,8 @@ def test_update_todo_not_found(test_todo):
 def test_delete_todo(test_todo):
     response = client.delete('/todos/todo/1')
     assert response.status_code == 204
-    db = TestingSessionLocal()
-    model = db.query(Todos).filter(Todos.id == 1).first()
+    with TestingSessionLocal() as db:
+        model = db.query(Todos).filter(Todos.id == 1).first()
     assert model is None
 
 
