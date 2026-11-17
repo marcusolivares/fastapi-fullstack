@@ -1,4 +1,6 @@
-from ..routers.auth import authenticate_user, create_access_token, SECRET_KEY, ALGORITHM, get_current_user
+from ..routers.auth import authenticate_user
+from ..security import create_access_token, SECRET_KEY, ALGORITHM
+from ..dependencies import get_current_user
 from fastapi import status
 from .utils import *
 from jose import jwt

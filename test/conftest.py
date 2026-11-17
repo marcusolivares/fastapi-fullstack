@@ -2,7 +2,7 @@ import pytest
 
 from ..database import get_db
 from ..main import app
-from ..routers.auth import get_current_user
+from ..dependencies import get_current_user
 from .utils import TestingSessionLocal
 
 

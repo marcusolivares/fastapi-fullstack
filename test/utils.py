@@ -6,7 +6,7 @@ from ..database import Base
 from ..main import app
 import pytest
 from ..models import Todos, Users
-from ..routers.auth import bcrypt_context
+from ..security import bcrypt_context
 
 SQLALCHEMY_DATABASE_URL = os.environ["TEST_DATABASE_URL"]
 

@@ -1,4 +1,5 @@
 from fastapi import status
+from ..dependencies import get_current_user
 from ..models import Todos
 from .utils import *
 
@@ -21,3 +22,10 @@ def test_admin_delete_todo_not_found(test_todo):
     response = client.delete("/admin/todo/9999")
     assert response.status_code == 404
     assert response.json() == {'detail': 'Todo not found.'}
+
+
+def test_admin_forbidden_for_non_admin():
+    app.dependency_overrides[get_current_user] = lambda: {'username': 'regular', 'id': 2, 'user_role': 'user'}
+    response = client.get("/admin/todo")
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {'detail': 'Admin privileges required.'}
