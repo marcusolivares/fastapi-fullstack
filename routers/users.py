@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Path
 from ..models import Users
 from ..dependencies import CurrentUser, DbSession
+from ..schemas import UserResponse, UserVerification
 from ..security import bcrypt_context
 from starlette import status
 
@@ -11,13 +11,7 @@ router = APIRouter(
 )
 
 
-class UserVerification(BaseModel):
-     password: str
-     new_password: str = Field(min_length=6)
-
-     
-
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user(user: CurrentUser, db: DbSession):
     return db.query(Users).filter(Users.id == user.get('id')).first()
 

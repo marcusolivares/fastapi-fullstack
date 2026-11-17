@@ -1,8 +1,8 @@
 import pathlib
-from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Path, Request, status
 from ..models import Todos
 from ..dependencies import CurrentUser, DbSession, get_current_user
+from ..schemas import TodoRequest, TodoResponse
 from starlette import status
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -13,13 +13,6 @@ router = APIRouter(
      prefix='/todos',
      tags=['todos']
 )
-
-
-class TodoRequest(BaseModel):
-    title: str = Field(min_length=3)
-    description: str = Field(min_length=3, max_length=100)
-    priority: int = Field(gt=0, lt=6)
-    complete: bool
 
 
 def redirect_to_login():
@@ -67,12 +60,12 @@ async def render_edit_todo_page(request: Request, todo_id: int, db: DbSession):
           return redirect_to_login()
 
 ### Endpoints ###
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=list[TodoResponse])
 async def read_all(user: CurrentUser, db: DbSession):
     return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 
-@router.get("/todo/{todo_id}", status_code=status.HTTP_200_OK)
+@router.get("/todo/{todo_id}", status_code=status.HTTP_200_OK, response_model=TodoResponse)
 async def read_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()
     if todo_model is not None:

@@ -10,6 +10,7 @@ def test_return_user(test_user):
     assert response.json()['last_name'] == 'Roby'
     assert response.json()['role'] == 'admin'
     assert response.json()['phone_number'] == '(111)-111-1111'
+    assert 'hashed_password' not in response.json()
 
 
 def test_change_password_success(test_user):

@@ -2,10 +2,10 @@ from pathlib import Path
 from typing import Annotated
 from datetime import timedelta
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
 from starlette import status
 from ..dependencies import DbSession
 from ..models import Users
+from ..schemas import CreateUserRequest, Token
 from ..security import bcrypt_context, create_access_token
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -15,21 +15,6 @@ router = APIRouter(
     prefix='/auth',
     tags=['auth']
 )
-
-
-class CreateUserRequest(BaseModel):
-    username: str
-    email: str
-    first_name: str
-    last_name: str
-    password: str
-    role: str
-    phone_number: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates")

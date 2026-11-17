@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, HTTPException, Path
 from ..models import Todos
 from ..dependencies import DbSession, require_admin
+from ..schemas import TodoResponse
 from starlette import status
 
 router = APIRouter(
@@ -11,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/todo", status_code=status.HTTP_200_OK)
+@router.get("/todo", status_code=status.HTTP_200_OK, response_model=list[TodoResponse])
 async def read_all(db: DbSession):
     return db.query(Todos).all()
 
