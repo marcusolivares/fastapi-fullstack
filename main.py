@@ -2,10 +2,14 @@ from fastapi import FastAPI
 from .models import Base
 from .database import engine
 from .routers import auth, todos, admin, users
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
+
+
+app.mount("/static", StaticFiles(directory="TodoApp/static"), name="static")
 
 
 @app.get("/healthy")
