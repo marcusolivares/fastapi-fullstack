@@ -1,7 +1,7 @@
 # Refactor plan
 
 Incremental cleanup of the TodoApp architecture. Each step is planned, implemented, tested
-(`pytest TodoApp/test` against the docker-compose test DB), reviewed as a diff, and committed
+(`pytest app/test` against the docker-compose test DB), reviewed as a diff, and committed
 on its own so it can be studied in isolation.
 
 ## Done
@@ -12,22 +12,14 @@ on its own so it can be studied in isolation.
 | B | Auth helpers moved out of the routers (`security.py`, `dependencies.py`); admin router guarded by a router-level `require_admin` (403); unreachable `if user is None` checks removed | `49e400b` |
 | C | Pydantic models collected in `schemas.py`; `TodoResponse` / `UserResponse` response models, so `GET /users/` no longer returns `hashed_password` | `017c28d` |
 | D | Typed `Settings` in `config.py` loaded from `.env`; `SECRET_KEY` rotated out of the source; token lifetime configurable; startup fails fast on missing settings | `1b633ce` |
+| E | HTML routes moved to `routers/pages.py` (one `Jinja2Templates`, hidden from `/docs`); cookie dependency raises `NotAuthenticated`, one exception handler redirects to login (replaces the bare `try/except:`); templates `{% extends 'layout.html' %}`; edit-todo page filters by owner (404) | `1ef3712` |
+| - | Package moved into `app/` so the repo runs from its root whatever the clone is called (`uvicorn app.main:app`, `pytest app/test`); `.env` at the repo root | `e5b3cd9` |
 
 ## Next
 
-### E: Separate pages from the API
-- Cookie-based auth dependency that raises a `NotAuthenticated` exception, plus one
-  `@app.exception_handler` that redirects to the login page. This replaces the bare `try/except:`
-  in the page routes, which currently turns *any* error (database, template) into a login redirect.
-- Move the HTML routes into `routers/pages.py` with a single `Jinja2Templates` instance
-  (currently duplicated in `routers/auth.py` and `routers/todos.py`).
-- Templates: `{% extends 'layout.html' %}` + `{% block content %}` instead of `{% include %}`
-  (page content currently renders after `</html>`).
-- Edit-todo page: filter by owner (currently any logged-in user can open any todo by id).
-
 ### F: Housekeeping
-- Routes that make sync SQLAlchemy calls: `async def` → `def` (sync calls inside `async def`
-  block the event loop).
+- API routes that make sync SQLAlchemy calls: `async def` → `def` (sync calls inside `async def`
+  block the event loop). The page routes are already `def` since E.
 - Move the test DB setup and fixtures from `test/utils.py` into `test/conftest.py`; drop
   `from .utils import *`; remove the tutorial leftover `test/test_example.py`.
 - Remove unused and duplicate imports; `declarative_base()` → `sqlalchemy.orm.DeclarativeBase`.
