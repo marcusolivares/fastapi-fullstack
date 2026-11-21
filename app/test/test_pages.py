@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from ..database import get_db
 from ..main import app
 from ..security import create_access_token
-from .utils import *
 
 
 def login_cookie(user_id: int) -> dict:

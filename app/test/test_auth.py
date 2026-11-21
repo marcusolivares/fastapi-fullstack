@@ -2,24 +2,21 @@ from ..routers.auth import authenticate_user
 from ..config import settings
 from ..security import create_access_token
 from ..dependencies import get_current_user
-from fastapi import status
-from .utils import *
 from jose import jwt
 from datetime import timedelta
 import pytest
 from fastapi import HTTPException
 
-def test_authenticate_user(test_user):
-    with TestingSessionLocal() as db:
-        authenticated_user = authenticate_user(test_user.username, 'testpassword', db)
-        assert authenticated_user is not None
-        assert authenticated_user.username == test_user.username
+def test_authenticate_user(db, test_user):
+    authenticated_user = authenticate_user(test_user.username, 'testpassword', db)
+    assert authenticated_user is not None
+    assert authenticated_user.username == test_user.username
 
-        non_existent_user = authenticate_user('WrongUserName', 'testpassword', db)
-        assert non_existent_user is False
+    non_existent_user = authenticate_user('WrongUserName', 'testpassword', db)
+    assert non_existent_user is False
 
-        wrong_password_user = authenticate_user(test_user.username, 'wrongpassword', db)
-        assert wrong_password_user is False
+    wrong_password_user = authenticate_user(test_user.username, 'wrongpassword', db)
+    assert wrong_password_user is False
 
 
 def test_create_access_token():
@@ -35,7 +32,7 @@ def test_create_access_token():
     assert decoded_token['sub'] == username
     assert decoded_token['id'] == user_id
     assert decoded_token['role'] == role
-    
+
 
 @pytest.mark.asyncio
 async def test_get_current_user_valid_token():
@@ -56,4 +53,3 @@ async def test_get_current_user_missing_payload():
 
     assert excinfo.value.status_code == 401
     assert excinfo.value.detail == 'Could not validate user.'
-
