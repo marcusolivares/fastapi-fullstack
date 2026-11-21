@@ -1,9 +1,7 @@
-from pydantic import BaseModel, Field
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from ..models import Todos
 from ..dependencies import DbSession, require_admin
 from ..schemas import TodoResponse
-from starlette import status
 
 router = APIRouter(
     prefix='/admin',
@@ -24,4 +22,3 @@ def delete_todo(db: DbSession, todo_id: int = Path(gt=0)):
         raise HTTPException(status_code=404, detail='Todo not found.')
     db.delete(todo_model)
     db.commit()
-

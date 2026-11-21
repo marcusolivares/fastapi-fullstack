@@ -1,13 +1,11 @@
 from typing import Annotated
 from datetime import timedelta
-from fastapi import APIRouter, HTTPException
-from starlette import status
+from fastapi import APIRouter, Depends, HTTPException, status
 from ..config import settings
 from ..dependencies import DbSession
 from ..models import Users
 from ..schemas import CreateUserRequest, Token
 from ..security import bcrypt_context, create_access_token
-from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(
@@ -52,14 +50,3 @@ def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depen
     token = create_access_token(user.username, user.id, user.role, timedelta(minutes=settings.access_token_expire_minutes))
     
     return {'access_token': token, 'token_type': 'bearer'}
-
-
-
-
-
-
-
-
-
-
-

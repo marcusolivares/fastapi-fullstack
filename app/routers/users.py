@@ -1,9 +1,8 @@
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, status
 from ..models import Users
 from ..dependencies import CurrentUser, DbSession
 from ..schemas import UserResponse, UserVerification
 from ..security import bcrypt_context
-from starlette import status
 
 router = APIRouter(
     prefix='/users',
