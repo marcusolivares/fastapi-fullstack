@@ -53,6 +53,6 @@ async def delete_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found.')
 
-    db.query(Todos).filter(Todos.id == todo_id).delete()
+    db.delete(todo_model)
     db.commit()
 
