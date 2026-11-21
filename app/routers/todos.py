@@ -10,12 +10,12 @@ router = APIRouter(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[TodoResponse])
-async def read_all(user: CurrentUser, db: DbSession):
+def read_all(user: CurrentUser, db: DbSession):
     return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 
 @router.get("/todo/{todo_id}", status_code=status.HTTP_200_OK, response_model=TodoResponse)
-async def read_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
+def read_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()
     if todo_model is not None:
         return todo_model
@@ -23,7 +23,7 @@ async def read_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0))
 
 
 @router.post("/todo", status_code=status.HTTP_201_CREATED)
-async def create_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest):
+def create_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest):
     todo_model = Todos(**todo_request.model_dump(), owner_id=user.get('id'))
 
     db.add(todo_model)
@@ -31,7 +31,7 @@ async def create_todo(user: CurrentUser, db: DbSession, todo_request: TodoReques
 
 
 @router.put("/todo/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest, todo_id: int = Path(gt=0)):
+def update_todo(user: CurrentUser, db: DbSession, todo_request: TodoRequest, todo_id: int = Path(gt=0)):
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()
 
     if todo_model is None:
@@ -47,7 +47,7 @@ async def update_todo(user: CurrentUser, db: DbSession, todo_request: TodoReques
 
 
 @router.delete("/todo/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
+def delete_todo(user: CurrentUser, db: DbSession, todo_id: int = Path(gt=0)):
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).first()
 
     if todo_model is None:

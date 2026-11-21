@@ -26,7 +26,7 @@ def authenticate_user(username: str, password: str, db):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: DbSession, 
+def create_user(db: DbSession, 
                       create_user_request: CreateUserRequest):
     create_user_model = Users(
         email=create_user_request.email,
@@ -44,7 +44,7 @@ async def create_user(db: DbSession,
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: DbSession):
+def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: DbSession):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user.')

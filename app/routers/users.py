@@ -12,12 +12,12 @@ router = APIRouter(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=UserResponse)
-async def get_user(user: CurrentUser, db: DbSession):
+def get_user(user: CurrentUser, db: DbSession):
     return db.query(Users).filter(Users.id == user.get('id')).first()
 
 
 @router.put("/password", status_code=status.HTTP_204_NO_CONTENT)
-async def change_password(user: CurrentUser, db: DbSession, user_verification: UserVerification):
+def change_password(user: CurrentUser, db: DbSession, user_verification: UserVerification):
     user_model = db.query(Users).filter(Users.id == user.get('id')).first()
 
     if not bcrypt_context.verify(user_verification.password, user_model.hashed_password):
@@ -29,7 +29,7 @@ async def change_password(user: CurrentUser, db: DbSession, user_verification: U
 
 
 @router.put("/phone_number/{phone_number}", status_code=status.HTTP_204_NO_CONTENT)
-async def change_phone_number(user: CurrentUser, db: DbSession, phone_number: str):
+def change_phone_number(user: CurrentUser, db: DbSession, phone_number: str):
     user_model = db.query(Users).filter(Users.id == user.get('id')).first()
 
     user_model.phone_number = phone_number
