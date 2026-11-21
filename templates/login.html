@@ -1,5 +1,6 @@
-{% include 'layout.html' %}
+{% extends 'layout.html' %}
 
+{% block content %}
 <div class="container">
     <div class="card">
         <div class="card-header">
@@ -22,4 +23,5 @@
             <a href="/auth/register-page"> Register? </a>
         </div>
     </div>
-</div>  
+</div>
+{% endblock %}

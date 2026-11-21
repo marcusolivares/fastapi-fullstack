@@ -52,7 +52,7 @@ TodoApp/
 ├── security.py        # password hashing, JWT creation
 ├── models.py          # SQLAlchemy models (Users, Todos)
 ├── schemas.py         # Pydantic request/response models
-├── routers/           # auth, todos, users, admin
+├── routers/           # pages (HTML) + auth, todos, users, admin (API)
 ├── templates/         # Jinja2 pages
 ├── static/            # CSS + JS
 ├── alembic/           # migrations

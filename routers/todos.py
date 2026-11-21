@@ -1,13 +1,7 @@
-import pathlib
-from fastapi import APIRouter, HTTPException, Path, Request, status
+from fastapi import APIRouter, HTTPException, Path, status
 from ..models import Todos
-from ..dependencies import CurrentUser, DbSession, get_current_user
+from ..dependencies import CurrentUser, DbSession
 from ..schemas import TodoRequest, TodoResponse
-from starlette import status
-from starlette.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-
-templates = Jinja2Templates(directory=pathlib.Path(__file__).resolve().parent.parent / "templates")
 
 router = APIRouter(
      prefix='/todos',
@@ -15,51 +9,6 @@ router = APIRouter(
 )
 
 
-def redirect_to_login():
-     redirect_response = RedirectResponse(url="/auth/login-page", status_code=status.HTTP_302_FOUND)
-     redirect_response.delete_cookie(key="access_token")
-     return redirect_response
-
-
-### Pages ###
-
-@router.get("/todo-page")
-async def render_todo_page(request: Request, db: DbSession):
-     try:
-          user = await get_current_user(request.cookies.get('access_token'))
-
-          todos = db.query(Todos).filter(Todos.owner_id == user.get("id")).all()
-
-          return templates.TemplateResponse(request, "todo.html", {"todos": todos, "user": user})
-
-     except:
-          return redirect_to_login()
-
-
-@router.get("/add-todo-page")
-async def render_add_todo_page(request: Request):
-     try:
-          user = await get_current_user(request.cookies.get('access_token'))
-
-          return templates.TemplateResponse(request, "add-todo.html", {"user": user})
-
-     except:
-          return redirect_to_login()
-
-
-@router.get("/edit-todo-page/{todo_id}")
-async def render_edit_todo_page(request: Request, todo_id: int, db: DbSession):
-     try:
-          user = await get_current_user(request.cookies.get('access_token'))
-
-          todo = db.query(Todos).filter(Todos.id == todo_id).first()
-
-          return templates.TemplateResponse(request, "edit-todo.html", {"todo": todo, "user": user})
-
-     except:
-          return redirect_to_login()
-
-### Endpoints ###
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[TodoResponse])
 async def read_all(user: CurrentUser, db: DbSession):
     return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()

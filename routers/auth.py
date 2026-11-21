@@ -1,7 +1,6 @@
-from pathlib import Path
 from typing import Annotated
 from datetime import timedelta
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 from starlette import status
 from ..config import settings
 from ..dependencies import DbSession
@@ -10,7 +9,6 @@ from ..schemas import CreateUserRequest, Token
 from ..security import bcrypt_context, create_access_token
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
 
 router = APIRouter(
     prefix='/auth',
@@ -18,20 +16,6 @@ router = APIRouter(
 )
 
 
-templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates")
-
-
-### Pages ###
-
-@router.get("/login-page")
-def render_login_page(request: Request):
-    return templates.TemplateResponse(request, "login.html")
-
-@router.get("/register-page")
-def render_register_page(request: Request):
-    return templates.TemplateResponse(request, "register.html")
-
-### Endpoints ###
 def authenticate_user(username: str, password: str, db):
     user=db.query(Users).filter(Users.username == username).first()
     if not user:
