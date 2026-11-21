@@ -5,8 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # Load TodoApp/.env regardless of the current working directory
-        env_file=Path(__file__).resolve().parent / ".env",
+        # Load .env from the repo root regardless of the current working directory
+        env_file=Path(__file__).resolve().parent.parent / ".env",
         # Unknown keys in .env are ignored instead of failing startup
         extra="ignore",
     )

@@ -44,36 +44,39 @@ flowchart LR
 ## Project structure
 
 ```
-TodoApp/
-├── main.py            # app setup, static files, router registration
-├── config.py          # typed settings loaded from .env
-├── database.py        # engine, session, get_db
-├── dependencies.py    # current user + admin guards
-├── security.py        # password hashing, JWT creation
-├── models.py          # SQLAlchemy models (Users, Todos)
-├── schemas.py         # Pydantic request/response models
-├── routers/           # pages (HTML) + auth, todos, users, admin (API)
-├── templates/         # Jinja2 pages
-├── static/            # CSS + JS
-├── alembic/           # migrations
-└── test/              # pytest suite
+fastapi-fullstack/
+├── app/
+│   ├── main.py            # app setup, static files, router registration
+│   ├── config.py          # typed settings loaded from .env
+│   ├── database.py        # engine, session, get_db
+│   ├── dependencies.py    # current user + admin guards
+│   ├── security.py        # password hashing, JWT creation
+│   ├── models.py          # SQLAlchemy models (Users, Todos)
+│   ├── schemas.py         # Pydantic request/response models
+│   ├── routers/           # pages (HTML) + auth, todos, users, admin (API)
+│   ├── templates/         # Jinja2 pages
+│   ├── static/            # CSS + JS
+│   └── test/              # pytest suite
+├── alembic/               # migrations
+├── docs/                  # refactor plan
+├── .env.example
+└── docker-compose.yml     # test database
 ```
 
 ## Getting started
 
 **Prerequisites:** Python 3.10+, a running PostgreSQL, and Docker (for the tests).
-
-> The code is a Python package imported as `TodoApp` (relative imports, Alembic's `env.py`),
-> so clone it into a folder with that name and run commands from its **parent** directory.
+Run all commands from the repo root.
 
 ```bash
-git clone https://github.com/marcusolivares/fastapi-fullstack.git TodoApp
-python -m venv TodoApp/.venv
-source TodoApp/.venv/bin/activate        # Windows: TodoApp\.venv\Scripts\activate
-pip install -r TodoApp/requirements.txt
+git clone https://github.com/marcusolivares/fastapi-fullstack.git
+cd fastapi-fullstack
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-Create an empty PostgreSQL database, then copy `.env.example` to `TodoApp/.env` and fill it in:
+Create an empty PostgreSQL database, then copy `.env.example` to `.env` and fill it in:
 
 ```env
 DATABASE_URL=postgresql://postgres:<password>@localhost/TodoApplicationDatabase
@@ -84,7 +87,7 @@ SECRET_KEY=<output of: python -c "import secrets; print(secrets.token_hex(32))">
 Run the app (tables are created on startup):
 
 ```bash
-uvicorn TodoApp.main:app --reload
+uvicorn app.main:app --reload
 ```
 
 - App: http://localhost:8000
@@ -113,8 +116,8 @@ uvicorn TodoApp.main:app --reload
 The suite runs against a disposable PostgreSQL container on port 5433:
 
 ```bash
-docker compose -f TodoApp/docker-compose.yml up -d
-pytest TodoApp/test
+docker compose up -d
+pytest app/test
 ```
 
 ## Roadmap

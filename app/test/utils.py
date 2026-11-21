@@ -8,7 +8,7 @@ import pytest
 from ..models import Todos, Users
 from ..security import bcrypt_context
 
-assert settings.test_database_url, "TEST_DATABASE_URL must be set in TodoApp/.env to run the tests"
+assert settings.test_database_url, "TEST_DATABASE_URL must be set in .env to run the tests"
 
 engine = create_engine(settings.test_database_url)
 
