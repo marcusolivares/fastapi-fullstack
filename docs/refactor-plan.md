@@ -14,16 +14,11 @@ on its own so it can be studied in isolation.
 | D | Typed `Settings` in `config.py` loaded from `.env`; `SECRET_KEY` rotated out of the source; token lifetime configurable; startup fails fast on missing settings | `1b633ce` |
 | E | HTML routes moved to `routers/pages.py` (one `Jinja2Templates`, hidden from `/docs`); cookie dependency raises `NotAuthenticated`, one exception handler redirects to login (replaces the bare `try/except:`); templates `{% extends 'layout.html' %}`; edit-todo page filters by owner (404) | `1ef3712` |
 | - | Package moved into `app/` so the repo runs from its root whatever the clone is called (`uvicorn app.main:app`, `pytest app/test`); `.env` at the repo root | `e5b3cd9` |
+| F | Housekeeping, one commit each: `DeclarativeBase` (`7362b44`); deletes use `db.delete(todo_model)` instead of a second query (`f5e321c`); API routes `async def` → `def` so sync DB and bcrypt calls don't block the event loop (`fc8d5e0`); unused and duplicate imports removed (`f7ffc14`); test setup and fixtures moved into `conftest.py` with `client` and `db` fixtures, no more `from .utils import *` (`afcd1a6`); tutorial `test_example.py` removed (`03feaa1`) | `7362b44`–`03feaa1` |
 
 ## Next
 
-### F: Housekeeping
-- API routes that make sync SQLAlchemy calls: `async def` → `def` (sync calls inside `async def`
-  block the event loop). The page routes are already `def` since E.
-- Move the test DB setup and fixtures from `test/utils.py` into `test/conftest.py`; drop
-  `from .utils import *`; remove the tutorial leftover `test/test_example.py`.
-- Remove unused and duplicate imports; `declarative_base()` → `sqlalchemy.orm.DeclarativeBase`.
-- Deletes: `db.delete(todo_model)` instead of querying the row twice.
+Nothing scheduled. The next step gets picked from the backlog below.
 
 ## Backlog (not scheduled yet)
 
