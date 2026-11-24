@@ -13,6 +13,8 @@ python-jose[cryptography]
 pydantic-settings
 # required by OAuth2PasswordRequestForm (/auth/token)
 python-multipart
+# required by Jinja2Templates (routers/pages.py); plain fastapi doesn't install it
+jinja2
 # testing (httpx is required by fastapi.testclient.TestClient)
 pytest
 pytest-asyncio
